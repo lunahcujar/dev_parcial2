@@ -65,3 +65,7 @@ async def convertir_en_premium(usuario_id: int, session: AsyncSession = Depends(
 @app.get("/usuarios/estado/activo", response_model=List[Usuario])
 async def listar_usuarios_activos(session: AsyncSession = Depends(get_session)):
     return await get_usuarios_activos(session)
+
+@app.get("/usuarios/estado/activo/premium", response_model=List[Usuario])
+async def listar_usuarios_activos_premium(session: AsyncSession = Depends(get_session)):
+    return await obtener_usuarios_premium_activos(session)

@@ -48,3 +48,11 @@ async def get_usuarios_activos(session: AsyncSession):
     result = await session.execute(query)
     return result.scalars().all()
 
+
+async def obtener_usuarios_premium_activos(session: AsyncSession):
+    consulta = select(Usuario).where(
+        Usuario.estado == "activo",
+        Usuario.premium == True
+    )
+    resultado = await session.exec(consulta)
+    return resultado.all()
