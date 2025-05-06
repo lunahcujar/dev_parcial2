@@ -1,20 +1,41 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from utils.connection_db import init_db
+from typing import List
 
+from fastapi import FastAPI, Depends
+from sqlmodel import Session
+from data.models import *
+from sqlmodel.ext.asyncio.session import AsyncSession
+from operations.operations_db import *
 
+from utils.connection_db import init_db, get_session
+# LIFESPAN: Se ejecuta una vez al inicio del servidor
 @asynccontextmanager
-async def lifespan(app:FastAPI):
+async def lifespan(app: FastAPI):
     await init_db()
     yield
+
+# SOLO una instancia de FastAPI
 app = FastAPI(lifespan=lifespan)
 
-
+# ENDPOINT DE PRUEBA
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-
 @app.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
+
+
+# ENDPOINT PARA CREAR USUARIO
+@app.post("/usuarios")
+async def crear_usuario( nuevo_usuario: Usuario, session: AsyncSession = Depends(get_session)):
+    session.add(nuevo_usuario)
+    await session.commit()
+    await session.refresh(nuevo_usuario)
+    return nuevo_usuario
+
+
+@app.get("/usuarios", response_model=List[Usuario])
+async def listar_usuarios(session: AsyncSession = Depends(get_session)):
+    return await obtener_todos_usuarios(session)

@@ -1,1 +1,19 @@
-'''Aqui debes construir las operaciones que se te han indicado'''
+from sqlmodel import Session, select
+from data.models import Usuario
+from utils.connection_db import get_session
+from sqlmodel.ext.asyncio.session import AsyncSession
+from data.models import *
+
+async def hacer_usuario_premium(usuario_id: int, session: AsyncSession):
+    usuario_db = await session.get(Usuario, usuario_id)
+    if not usuario_db:
+        return None
+    usuario_db.premium = True
+    await session.commit()
+    await session.refresh(usuario_db)
+    return usuario_db
+
+
+async def obtener_todos_usuarios(session: AsyncSession):
+    result = await session.exec(select(Usuario))
+    return result.all()
