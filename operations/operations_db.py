@@ -39,3 +39,8 @@ async def hacer_usuario_premium(usuario_id: int, session: AsyncSession):
     await session.commit()
     await session.refresh(usuario_db)
     return usuario_db
+
+async def obtener_usuarios_activos(session: AsyncSession):
+    query = select(Usuario).where(Usuario.estado == estado_Usuario.activo)
+    result = await session.execute(query)
+    return result.scalars().all()
