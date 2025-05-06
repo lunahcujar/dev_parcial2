@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from http.client import HTTPException
 from typing import List
 
 from fastapi import FastAPI, Depends
@@ -39,3 +40,10 @@ async def crear_usuario( nuevo_usuario: Usuario, session: AsyncSession = Depends
 @app.get("/usuarios", response_model=List[Usuario])
 async def listar_usuarios(session: AsyncSession = Depends(get_session)):
     return await obtener_todos_usuarios(session)
+
+@app.get("/usuarios/{usuario_id}", response_model=Usuario)
+async def get_usuario(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    usuario = await obtener_usuario_por_id(usuario_id, session)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return usuario

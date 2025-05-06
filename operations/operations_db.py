@@ -17,3 +17,6 @@ async def hacer_usuario_premium(usuario_id: int, session: AsyncSession):
 async def obtener_todos_usuarios(session: AsyncSession):
     result = await session.exec(select(Usuario))
     return result.all()
+
+async def obtener_usuario_por_id(usuario_id: int, session: AsyncSession):
+    return await session.get(Usuario, usuario_id)
