@@ -75,7 +75,7 @@ async def listar_usuarios_activos_premium(session: AsyncSession = Depends(get_se
 
 # Crear nueva tarea
 @app.post("/tareas", response_model=Tarea)
-async def endpoint_crear_tarea(tarea: TareaCreate, session: AsyncSession = Depends(get_session)):
+async def crear_tareas(tarea: TareaCreate, session: AsyncSession = Depends(get_session)):
     return await crear_tarea(tarea, session)
 
 @app.get("/tareas", response_model=List[Tarea])
