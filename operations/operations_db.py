@@ -95,9 +95,9 @@ async def obtener_tareas_por_usuario(usuario_id: int, session: AsyncSession):
     result = await session.exec(query)
     return result.all()
 
-# Obtener tareas activas (por ejemplo: no canceladas ni realizadas)
-async def obtener_tareas_activas(session: AsyncSession) :
-    query = select(Tarea).where(Tarea.estado.in_([EstadoTarea.pendiente, EstadoTarea.en_ejecucion]))
+# Obtener tareas realizadas
+async def obtener_tareas_realizadas(session: AsyncSession):
+    query = select(Tarea).where(Tarea.estado == EstadoTarea.realizada)
     result = await session.exec(query)
     return result.all()
 

@@ -83,3 +83,32 @@ async def crear_nueva_tarea(tarea: Tarea, session: AsyncSession = Depends(get_se
 @app.get("/tareas", response_model=List[Tarea])
 async def listar_todas_tareas(session: AsyncSession = Depends(get_session)):
     return await obtener_todas_tareas(session)
+
+@app.get("/tareas/{tarea_id}", response_model=Tarea)
+async def obtener_tarea_por_id(tarea_id: int, session: AsyncSession = Depends(get_session)):
+    tarea = await obtener_tarea_por_id(tarea_id, session)
+    if not tarea:
+        raise HTTPException(status_code=404, detail="Tarea no encontrada")
+    return tarea
+
+@app.put("/tareas/{tarea_id}/estado", response_model=Tarea)
+async def actualizar_estado(tarea_id: int, nuevo_estado: EstadoTarea, session: AsyncSession = Depends(get_session)):
+    tarea = await actualizar_estado_tarea(tarea_id, nuevo_estado, session)
+    if not tarea:
+        raise HTTPException(status_code=404, detail="Tarea no encontrada")
+    return tarea
+
+@app.get("/tareas/usuario/{usuario_id}", response_model=List[Tarea])
+async def listar_tareas_por_usuario(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    return await obtener_tareas_por_usuario(usuario_id, session)
+
+@app.get("/tareas/estado/realizada", response_model=List[Tarea])
+async def listar_tareas_realizadas(session: AsyncSession = Depends(get_session)):
+    tareas = await obtener_tareas_realizadas(session)
+    if not tareas:
+        raise HTTPException(status_code=404, detail="No hay tareas realizadas")
+    return tareas
+
+@app.get("/tareas/estado/{estado}", response_model=List[Tarea])
+async def listar_tareas_por_estado(estado: EstadoTarea, session: AsyncSession = Depends(get_session)):
+    return await obtener_tareas_por_estado(estado, session)
