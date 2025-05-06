@@ -3,6 +3,8 @@ from data.models import Usuario
 from utils.connection_db import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from data.models import *
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
 
 async def hacer_usuario_premium(usuario_id: int, session: AsyncSession):
     usuario_db = await session.get(Usuario, usuario_id)
@@ -40,7 +42,9 @@ async def hacer_usuario_premium(usuario_id: int, session: AsyncSession):
     await session.refresh(usuario_db)
     return usuario_db
 
+
 async def obtener_usuarios_activos(session: AsyncSession):
-    query = select(Usuario).where(Usuario.estado == estado_Usuario.activo)
-    result = await session.execute(query)
-    return result.scalars().all()
+    consulta = select(Usuario).where(Usuario.estado == "activo")
+    resultado = await session.exec(consulta)
+    return resultado.all()
+

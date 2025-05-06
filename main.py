@@ -62,9 +62,6 @@ async def convertir_en_premium(usuario_id: int, session: AsyncSession = Depends(
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return usuario
 
-@app.get("/usuarios/activos", response_model=List[Usuario])
-async def listar_usuarios_activos(session: AsyncSession = Depends(get_session)):
-    usuarios = await obtener_usuarios_activos(session)
-    if not usuarios:
-        raise HTTPException(status_code=404, detail="No hay usuarios activos")
-    return usuarios
+@app.get("/usuarios/activos")
+async def listar_activos(session: AsyncSession = Depends(get_session)):
+    return await obtener_usuarios_activos(session)
