@@ -79,3 +79,7 @@ async def crear_nueva_tarea(tarea: Tarea, session: AsyncSession = Depends(get_se
     tarea.fecha_creacion = datetime.utcnow()
     tarea.fecha_modificacion = datetime.utcnow()
     return await crear_tarea(tarea, session)
+
+@app.get("/tareas", response_model=List[Tarea])
+async def listar_todas_tareas(session: AsyncSession = Depends(get_session)):
+    return await obtener_todas_tareas(session)
