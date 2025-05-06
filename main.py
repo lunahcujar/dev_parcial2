@@ -47,3 +47,17 @@ async def get_usuario(usuario_id: int, session: AsyncSession = Depends(get_sessi
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return usuario
+
+@app.put("/usuarios/{usuario_id}/estado", response_model=Usuario)
+async def update_estado_usuario(usuario_id: int, nuevo_estado: estado_Usuario, session: AsyncSession = Depends(get_session)):
+    usuario = await actualizar_estado_usuario(usuario_id, nuevo_estado, session)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return usuario
+
+@app.put("/usuarios/{usuario_id}/premium", response_model=Usuario)
+async def convertir_en_premium(usuario_id: int, session: AsyncSession = Depends(get_session)):
+    usuario = await hacer_usuario_premium(usuario_id, session)
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return usuario
