@@ -56,3 +56,53 @@ async def obtener_usuarios_premium_activos(session: AsyncSession):
     )
     resultado = await session.exec(consulta)
     return resultado.all()
+
+
+
+
+#operaciones Tarea
+
+# Crear una nueva tarea
+async def crear_tarea(tarea: Tarea, session: AsyncSession) -> Tarea:
+    session.add(tarea)
+    await session.commit()
+    await session.refresh(tarea)
+    return tarea
+
+# Obtener todas las tareas
+async def obtener_todas_tareas(session: AsyncSession) :
+    result = await session.exec(select(Tarea))
+    return result.all()
+
+# Obtener tarea por ID
+async def obtener_tarea_por_id(tarea_id: int, session: AsyncSession) :
+    return await session.get(Tarea, tarea_id)
+
+# Actualizar estado de una tarea
+async def actualizar_estado_tarea(tarea_id: int, nuevo_estado: EstadoTarea, session: AsyncSession) :
+    tarea = await session.get(Tarea, tarea_id)
+    if not tarea:
+        return None
+    tarea.estado = nuevo_estado
+    tarea.fecha_modificacion = datetime.utcnow()
+    await session.commit()
+    await session.refresh(tarea)
+    return tarea
+
+# Obtener tareas por usuario
+async def obtener_tareas_por_usuario(usuario_id: int, session: AsyncSession):
+    query = select(Tarea).where(Tarea.usuario_id == usuario_id)
+    result = await session.exec(query)
+    return result.all()
+
+# Obtener tareas activas (por ejemplo: no canceladas ni realizadas)
+async def obtener_tareas_activas(session: AsyncSession) :
+    query = select(Tarea).where(Tarea.estado.in_([EstadoTarea.pendiente, EstadoTarea.en_ejecucion]))
+    result = await session.exec(query)
+    return result.all()
+
+# Obtener tareas por estado
+async def obtener_tareas_por_estado(estado: EstadoTarea, session: AsyncSession) :
+    query = select(Tarea).where(Tarea.estado == estado)
+    result = await session.exec(query)
+    return result.all()

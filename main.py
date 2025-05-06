@@ -69,3 +69,13 @@ async def listar_usuarios_activos(session: AsyncSession = Depends(get_session)):
 @app.get("/usuarios/estado/activo/premium", response_model=List[Usuario])
 async def listar_usuarios_activos_premium(session: AsyncSession = Depends(get_session)):
     return await obtener_usuarios_premium_activos(session)
+
+
+#Endpoints de Tarea
+
+# Crear nueva tarea
+@app.post("/tareas", response_model=Tarea)
+async def crear_nueva_tarea(tarea: Tarea, session: AsyncSession = Depends(get_session)):
+    tarea.fecha_creacion = datetime.utcnow()
+    tarea.fecha_modificacion = datetime.utcnow()
+    return await crear_tarea(tarea, session)
