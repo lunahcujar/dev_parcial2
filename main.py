@@ -75,10 +75,15 @@ async def listar_usuarios_activos_premium(session: AsyncSession = Depends(get_se
 
 # Crear nueva tarea
 @app.post("/tareas", response_model=Tarea)
-async def crear_nueva_tarea(tarea: Tarea, session: AsyncSession = Depends(get_session)):
-    tarea.fecha_creacion = datetime.utcnow()
-    tarea.fecha_modificacion = datetime.utcnow()
-    return await crear_tarea(tarea, session)
+async def crear_tarea(nueva_tarea: Tarea, session: AsyncSession = Depends(get_session)):
+    try:
+        session.add(nueva_tarea)
+        await session.commit()
+        await session.refresh(nueva_tarea)
+        return nueva_tarea
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al crear tarea: {str(e)}")
 
 @app.get("/tareas", response_model=List[Tarea])
 async def listar_todas_tareas(session: AsyncSession = Depends(get_session)):
