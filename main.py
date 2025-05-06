@@ -74,17 +74,9 @@ async def listar_usuarios_activos_premium(session: AsyncSession = Depends(get_se
 #Endpoints de Tarea
 
 # Crear nueva tarea
-@app.post("/tareas")
-async def crear_tarea(nueva_tarea: Tarea, session: AsyncSession = Depends(get_session)):
-    print("Recibida:", nueva_tarea)
-    try:
-        session.add(nueva_tarea)
-        await session.commit()
-        await session.refresh(nueva_tarea)
-        return nueva_tarea
-    except Exception as e:
-        print("Error al crear tarea:", e)
-        raise HTTPException(status_code=500, detail=str(e))
+@app.post("/tareas", response_model=Tarea)
+async def endpoint_crear_tarea(tarea: TareaCreate, session: AsyncSession = Depends(get_session)):
+    return await crear_tarea(tarea, session)
 
 @app.get("/tareas", response_model=List[Tarea])
 async def listar_todas_tareas(session: AsyncSession = Depends(get_session)):

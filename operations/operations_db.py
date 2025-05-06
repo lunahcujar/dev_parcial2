@@ -5,6 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from data.models import *
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
+from fastapi import HTTPException
 
 async def hacer_usuario_premium(usuario_id: int, session: AsyncSession):
     usuario_db = await session.get(Usuario, usuario_id)
@@ -62,12 +63,24 @@ async def obtener_usuarios_premium_activos(session: AsyncSession):
 
 #operaciones Tarea
 
-# Crear una nueva tarea
-async def crear_tarea(tarea: Tarea, session: AsyncSession) -> Tarea:
-    session.add(tarea)
-    await session.commit()
-    await session.refresh(tarea)
-    return tarea
+async def crear_tarea(tarea: TareaCreate, session: AsyncSession) -> Tarea:
+    nueva_tarea = Tarea(
+        nombre=tarea.nombre,
+        descripcion=tarea.descripcion,
+        estado=tarea.estado,
+        usuario_id=tarea.usuario_id,
+        fecha_creacion=datetime.utcnow(),
+        fecha_modificacion=datetime.utcnow()
+    )
+    try:
+        session.add(nueva_tarea)
+        await session.commit()
+        await session.refresh(nueva_tarea)
+        return nueva_tarea
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al crear la tarea: {str(e)}")
+
 
 # Obtener todas las tareas
 async def obtener_todas_tareas(session: AsyncSession) :

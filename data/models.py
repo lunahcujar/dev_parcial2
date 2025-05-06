@@ -42,3 +42,9 @@ class EstadoTarea(str, Enum):
     realizada = "Realizada"
     cancelada = "Cancelada"
 
+# Modelo para crear tareas (entrada)
+class TareaCreate(SQLModel):
+    nombre: str
+    descripcion: str
+    estado: EstadoTarea
+    usuario_id: int
