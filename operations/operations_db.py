@@ -88,8 +88,12 @@ async def obtener_todas_tareas(session: AsyncSession) :
     return result.all()
 
 # Obtener tarea por ID
-async def obtener_tarea_por_id(tarea_id: int, session: AsyncSession) :
-    return await session.get(Tarea, tarea_id)
+async def obtener_tarea_por_id(tarea_id: int, session: AsyncSession):
+    result = await session.execute(select(Tarea).where(Tarea.id == tarea_id))
+    tarea = result.scalar_one_or_none()
+    if not tarea:
+        raise HTTPException(status_code=404, detail="Tarea no encontrada")
+    return tarea
 
 # Actualizar estado de una tarea
 async def actualizar_estado_tarea(tarea_id: int, nuevo_estado: EstadoTarea, session: AsyncSession) :

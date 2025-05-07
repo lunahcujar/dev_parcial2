@@ -83,11 +83,13 @@ async def listar_todas_tareas(session: AsyncSession = Depends(get_session)):
     return await obtener_todas_tareas(session)
 
 @app.get("/tareas/{tarea_id}", response_model=Tarea)
-async def obtener_tarea_por_id(tarea_id: int, session: AsyncSession = Depends(get_session)):
-    tarea = await obtener_tarea_por_id(tarea_id, session)
-    if not tarea:
-        raise HTTPException(status_code=404, detail="Tarea no encontrada")
-    return tarea
+async def get_tarea(tarea_id: int, session: AsyncSession = Depends(get_session)):
+    try:
+        return await obtener_tarea_por_id(tarea_id, session)
+    except Exception as e:
+        print("Error al buscar tarea:", e)
+        raise HTTPException(status_code=500, detail=f"Error al buscar la tarea: {str(e)}")
+
 
 @app.put("/tareas/{tarea_id}/estado", response_model=Tarea)
 async def actualizar_estado(tarea_id: int, nuevo_estado: EstadoTarea, session: AsyncSession = Depends(get_session)):
